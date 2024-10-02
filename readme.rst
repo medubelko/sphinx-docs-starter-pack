@@ -429,12 +429,33 @@ This will create the required software list (``.sphinx/requirements.txt``),
 which is used to create a virtual environment (``.sphinx/venv``) and install
 dependency software within it.
 
-To install the validation tools:
 
-.. code-block:: none
+Validation tools
+^^^^^^^^^^^^^^^^
 
-   make woke-install
-   make pa11y-install
+To set up the validation tools:
+
+#. Install woke, pa11y, and LXD:
+
+   .. code-block:: none
+
+      make woke-install
+      make pa11y-install
+      snap install lxd
+
+#. Create a special user group for LXD:
+
+   .. code-block:: none
+
+      sudo usermod -a -G lxd $USER
+
+#. Log out and back in to apply the new group.
+
+#. Lastly, initialise the LXD container:
+
+   .. code-block:: none
+
+      lxd init --minimal
 
 You can add further Python modules to the required software list
 (``.sphinx/requirements.txt``) in the ``custom_required_modules`` variable

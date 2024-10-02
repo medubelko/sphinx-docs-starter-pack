@@ -17,12 +17,13 @@ PA11Y         = $(SPHINXDIR)/node_modules/pa11y/bin/pa11y.js --config $(SPHINXDI
 VENV          = $(VENVDIR)/bin/activate
 TARGET        = *
 ALLFILES      =  *.rst **/*.rst
+CODEFILES     = ./sample-doc/code/code.sh
 ADDPREREQS    ?=
 REQPDFPACKS   = latexmk fonts-freefont-otf texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-font-utils texlive-lang-cjk texlive-xetex plantuml xindy tex-gyre dvipng
 
 .PHONY: sp-full-help sp-woke-install sp-pa11y-install sp-install sp-run sp-html \
         sp-epub sp-serve sp-clean sp-clean-doc sp-spelling sp-spellcheck sp-linkcheck sp-woke \
-        sp-allmetrics sp-pa11y sp-pdf-prep-force sp-pdf-prep sp-pdf Makefile.sp sp-vale sp-bash
+        sp-allmetrics sp-pa11y sp-pdf-prep-force sp-pdf-prep sp-pdf Makefile.sp sp-vale sp-bash sp-code
 
 sp-full-help: $(VENVDIR)
 	@. $(VENV); $(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -149,6 +150,20 @@ sp-allmetrics: sp-html
 	@eval '$(METRICSDIR)/scripts/source_metrics.sh $(PWD)'
 	@eval '$(METRICSDIR)/scripts/build_metrics.sh $(PWD) $(METRICSDIR)'
 	
+sp-code:
+	@echo "Beginning code tests"
+	@lxc list | grep canonical-docs || \
+		lxc init ubuntu:22.04 canonical-docs
+	@lxc list | grep "canonical-docs | RUNNING" || \
+		lxc start canonical-docs
+	# TODO: Gather all code files
+	# Start test block
+	@eval 'lxc file push -p --mode 764 $(CODEFILES) canonical-docs/tmp/code/code.sh'
+	@echo "Testing code in $(CODEFILES)"
+	@(lxc exec canonical-docs -- /tmp/code/code.sh) > /dev/null
+	# End test block
+	@lxc stop canonical-docs
+	@lxc rebuild ubuntu:22.04 canonical-docs
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

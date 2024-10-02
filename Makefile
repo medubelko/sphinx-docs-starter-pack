@@ -24,6 +24,7 @@ help:
         "* check style guide compliance:              make vale \n" \
         "* check style guide compliance on target:    make vale TARGET=* \n" \
         "* check metrics for documentation:           make allmetrics \n" \
+        "* test code samples in documentation:        make code" \
         "* other possible targets:                    make <TAB twice> \n" \
         "------------------------------------------------------------- \n"
 
